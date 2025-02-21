@@ -10,11 +10,11 @@ export class SecretService {
     static secrets = new Map();
 
     static {
-        SecretService.secrets.set('ApiKey1', 'Secret1');
+        SecretService.secrets.set('enbd-123', 'ZW5iZC0xMjM=');
     }
 
     getSecretForKey(key: string): Uint8Array {
-        const secretString = SecretService.secrets.get(key) || '';
+        const secretString = SecretService.secrets.get(key) || 'VPC0i6OQGlg5nbipJkcLlw==';
 
         return Buffer.from(secretString);
     }

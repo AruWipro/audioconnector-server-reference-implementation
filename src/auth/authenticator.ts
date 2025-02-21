@@ -17,7 +17,7 @@ async function verifyRequestSignatureImpl(request: Request, secretService: Secre
     if (!apiKey) {
         return withFailure('PRECONDITION', 'Missing "X-API-KEY" header field');
     }
-
+    console.log(`apiKey is valid!!!`)
     const result = await verifySignature({
         headerFields: request.headers,
         requiredComponents: [
@@ -43,14 +43,15 @@ async function verifyRequestSignatureImpl(request: Request, secretService: Secre
             }
 
             const keyId = parameters.keyid;
-
+            console.log(`Key Id is ----`,keyId)
+            console.log(`API KEy Id is ----`,apiKey)
             if (keyId !== apiKey) {
                 return withFailure('PRECONDITION', 'X-API-KEY header field and signature keyid mismatch');
             }
 
             const secret = secretService.getSecretForKey(keyId);
             const code = secret ? 'GOODKEY' : 'BADKEY';
-            
+            console.log(`secret is ${secret} and code is ${code}` );
             return {
                 code: code,
                 key: secret
