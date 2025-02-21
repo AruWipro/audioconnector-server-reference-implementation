@@ -59,7 +59,7 @@ export class Server {
                 if (ws.readyState !== WebSocket.OPEN) {
                     return;
                 }
-
+                
                 const session = this.sessionMap.get(ws);
 
                 if (!session) {

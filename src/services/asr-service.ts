@@ -40,7 +40,7 @@ export class ASRService {
             this.emitter.emit('error', 'Speech recognition has already completed.');
             return this;
         }
-
+        console.log(`Uint8Array receving data ....`,JSON.stringify({data}))
         this.byteCount += data.length;
 
         /*
