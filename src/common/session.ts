@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import { WebSocket } from 'ws';
 import {
     JsonStringMap,
@@ -19,17 +18,16 @@ import {
     EventEntityBargeIn,
     EventEntityBotTurnResponse
 } from '../protocol/voice-bots';
-import { MessageHandlerRegistry } from '../websocket/message-handlers/message-handler-registry';
-import {
-    BotService,
-    BotResource,
-    BotResponse
-} from '../services/bot-service';
 import {
     ASRService,
     Transcript
 } from '../services/asr-service';
+import {
+    BotResource,
+    BotResponse, BotService
+} from '../services/bot-service';
 import { DTMFService } from '../services/dtmf-service';
+import { MessageHandlerRegistry } from '../websocket/message-handlers/message-handler-registry';
 
 export class Session {
     private MAXIMUM_BINARY_MESSAGE_SIZE = 64000;
@@ -109,7 +107,7 @@ export class Session {
         }
 
         const handler = this.messageHandlerRegistry.getHandler(message.type);
-
+        console.log(`processing text message and handler...`)
         if (!handler) {
             console.log(`Cannot find a message handler for '${message.type}'.`);
             return;
@@ -236,6 +234,7 @@ export class Session {
     */
     processBotStart() {
         if (!this.selectedBot) {
+            console.log(`No Bot!!!!`)
             return;
         }
 

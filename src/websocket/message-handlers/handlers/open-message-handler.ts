@@ -1,10 +1,10 @@
+import { Session } from '../../../common/session';
 import { MediaParameter } from '../../../protocol/core';
 import {
     ClientMessage,
     OpenMessage,
     ServerMessage
 } from '../../../protocol/message';
-import { Session } from '../../../common/session';
 import { MessageHandler } from '../message-handler';
 
 export class OpenMessageHandler implements MessageHandler {
@@ -47,6 +47,7 @@ export class OpenMessageHandler implements MessageHandler {
 
         session.checkIfBotExists()
             .then((exists) => {
+                console.log(`Yes Bot Exists!!!!`)
                 if (!exists) {
                     const message = 'The specific Bot does not exist.';
                     console.log(message);

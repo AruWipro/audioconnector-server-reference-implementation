@@ -14,12 +14,13 @@ export class TTSService {
     A real-world implementation would use a TTS engine.
     */
     static {
-        for (let x = 0; x < 40000; x++) {
+        for (let x = 0; x < 4000; x++) {
             TTSService.silence[x] = 0;
         }
     }
 
     getAudioBytes(data: string): Promise<Uint8Array> {
+        console.log(`Getting audio bytes....`,data)
         return Promise.resolve(Uint8Array.from(TTSService.silence));
     }
 }

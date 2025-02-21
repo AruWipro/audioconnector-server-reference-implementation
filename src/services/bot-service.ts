@@ -11,6 +11,7 @@ import { TTSService } from "./tts-service";
 */
 export class BotService {
     getBotIfExists(connectionUrl: string, inputVariables: JsonStringMap): Promise<BotResource | null> {
+
         return Promise.resolve(new BotResource());
     }
 }
@@ -35,6 +36,7 @@ export class BotResource {
         * 
         * See `tts-service` in this folder for more information.
         */
+       console.log(`Inside Bot Connectore...`)
         return this.ttsService.getAudioBytes(message)
             .then(audioBytes => new BotResponse('match', message)
                 .withConfidence(1.0)
@@ -51,7 +53,7 @@ export class BotResource {
     */
     getBotResponse(data: string): Promise<BotResponse> {
         const message = 'We are unable to help at this time.';
-
+        console.log(`Inside getBotResponse .. data is `, {data})
         return this.ttsService.getAudioBytes(message)
             .then(audioBytes => new BotResponse('match', message)
                 .withConfidence(1.0)
