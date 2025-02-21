@@ -1,25 +1,15 @@
 import EventEmitter from 'events';
+import { Readable } from 'stream';
+import { AWSASR } from './aws-asr';
 
-/*
-* This class provides ASR support for the incoming audio from the Client.
-* The following events are expected from the session:
-* 
-*   Name; error
-*   Parameters: Error message string or error object.
-* 
-*   Name: transcript
-*   Parameters: `Transcript` object.
-* 
-*   Name: final-transcript
-*   Parameters: `Transcript` object.
-* 
-* The current usage of this class requires that a new instance be created once
-* the final transcript has been received.
-*/
 export class ASRService {
     private emitter = new EventEmitter();
     private state = 'None';
     private byteCount = 0;
+    private awsASR = new AWSASR(); // Instance of AWSASR for transcription
+    private audioStream: Readable  = new Readable({
+        read() {},
+    });;
 
     on(event: string, listener: (...args: any[]) => void): ASRService {
         this.emitter?.addListener(event, listener);
@@ -30,31 +20,34 @@ export class ASRService {
         return this.state;
     }
 
-    /*
-    * For this implementation, we are just going to count the number of bytes received.
-    * Once we get "enough" bytes, we'll treat this as a completion. In a real-world
-    * scenario, an actual ASR engine should be invoked to process the audio bytes.
-    */
-    processAudio(data: Uint8Array): ASRService {
+    async processAudio(data: Uint8Array): Promise<ASRService> {
         if (this.state === 'Complete') {
             this.emitter.emit('error', 'Speech recognition has already completed.');
             return this;
         }
-        console.log(`Uint8Array receving data ....`,JSON.stringify({data}))
+
+        console.log(`Receiving Uint8Array audio data...`, JSON.stringify({ data }));
         this.byteCount += data.length;
 
-        /*
-        * If we get enough audio bytes, mark this instance as complete, send out the event,
-        * and reset the count to help prevent issues if this instance is attempted to be reused.
-        * 
-        * 40k bytes equates to 5 seconds of 8khz PCMU audio.
-        */
-        if (this.byteCount >= 40000) {
+        if (this.byteCount >= 40000) { // If enough data has been accumulated
             this.state = 'Complete';
-            this.emitter.emit('final-transcript', {
-                text: 'I would like to check my account balance.',
-                confidence: 1.0
-            });
+
+            // Initialize a Readable stream for the audio data
+            // Push the incoming audio data into the stream
+            this.audioStream.push(data);
+            this.audioStream.push(null); // End the stream
+
+            // Call AWS Transcribe to process the audio stream and get the result
+            const transcript = await this.awsASR.transcribeStream(this.audioStream);
+            console.log(`Received Tarasncript from  AWS ${transcript}`)
+            // Emit the transcription result only after it is processed by AWS Transcribe
+            if (transcript) {
+                this.emitter.emit('final-transcript', {
+                    text: transcript,
+                    confidence: 1.0, // You can adjust this based on AWS Transcribe's response
+                });
+            }
+
             this.byteCount = 0;
             return this;
         }
