@@ -1,17 +1,17 @@
 import { Request } from 'express';
-import {
-    VerifyResult,
-    verifySignature,
-    withFailure,
-    queryCanonicalizedHeaderField
-} from './signature-verifier'
 import { SecretService } from '../services/secret-service';
+import {
+    queryCanonicalizedHeaderField, VerifyResult,
+    verifySignature,
+    withFailure
+} from './signature-verifier';
 
 export function verifyRequestSignature(request: Request, secretService: SecretService): Promise<VerifyResult> {
     return verifyRequestSignatureImpl(request, secretService);
 }
 
 async function verifyRequestSignatureImpl(request: Request, secretService: SecretService): Promise<VerifyResult> {
+    console.log(`Headers are ${JSON.stringify(request.headers)}`)
     const apiKey = queryCanonicalizedHeaderField(request.headers, 'x-api-key');
 
     if (!apiKey) {

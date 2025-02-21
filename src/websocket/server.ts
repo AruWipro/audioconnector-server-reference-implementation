@@ -1,8 +1,8 @@
-import WS, { WebSocket } from 'ws';
 import express, { Express, Request } from 'express';
+import WS, { WebSocket } from 'ws';
 import { verifyRequestSignature } from '../auth/authenticator';
-import { Session } from '../common/session';
 import { getPort } from '../common/environment-variables';
+import { Session } from '../common/session';
 import { SecretService } from '../services/secret-service';
 
 export class Server {
@@ -23,9 +23,10 @@ export class Server {
 
         this.httpServer.on('upgrade', (request: Request, socket: any, head: any) => {
             console.log(`Received a connection request from ${request.url}.`);
-
+            console.log(`Received  request is ${JSON.stringify(request)}`);
             verifyRequestSignature(request, this.secretService)
-                .then(verifyResult => {
+            .then(verifyResult => {
+                    console.log(`verifyResult is --- ${verifyResult}`)
                     if (verifyResult.code !== 'VERIFIED') {
                         console.log('Authentication failed, closing the connection.');
                         socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
@@ -75,6 +76,7 @@ export class Server {
             });
 
             this.createConnection(ws, request);
+            
         });
     }
 
@@ -88,6 +90,7 @@ export class Server {
         session = new Session(ws, request.headers['audiohook-session-id'] as string, request.url);
         console.log('Creating a new session.');
         this.sessionMap.set(ws, session);
+        ws.emit('succeess');
     }
 
     private deleteConnection(ws: WebSocket) {
