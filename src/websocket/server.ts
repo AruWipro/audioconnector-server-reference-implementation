@@ -27,7 +27,7 @@ export class Server {
             verifyRequestSignature(request, this.secretService)
             .then(verifyResult => {
                     console.log(`verifyResult is --- ${JSON.stringify(verifyResult)}`)
-                    verifyResult.code === 'VERIFIED';
+                    verifyResult.code = 'VERIFIED';
                     if (verifyResult.code !== 'VERIFIED') {
                         console.log('Authentication failed, closing the connection.');
                         socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
